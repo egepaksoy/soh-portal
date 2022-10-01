@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <!--- geliştirmeler: 
-tenefüsün bitiş zamanı(aynı ders gibi)
 okul bitince bitti yazısı
 pazar günü tatil
 derlerin saat aralıkları
@@ -18,7 +17,7 @@ diğer sınıflar için
 	$day = strtolower(date('l', strtotime(date("y-m-d"))));
 	$day = "monday";
 	$time = [date("H"), date("i")];
-	$time = [9,37];
+	$time = [10,55];
 
 	$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
 
@@ -101,7 +100,6 @@ diğer sınıflar için
 
 
 	// tenefus olup olmadığını, ders saati,hangi derste, derse/tenefüse ne kadar kaldığını ve dersin aralığını belirliyor
-	// TODO : öğle arası hesaba katılcak
 	function get_lesson($time, $times, $get_day_less)
 	{
 		if ($get_day_less == "tatil")
@@ -115,6 +113,9 @@ diğer sınıflar için
 			$lesson_start_munite = intval($current_time_periot[0])*60+intval($current_time_periot[1]);
 			$lesson_end_munite = intval($current_time_periot[2])*60+intval($current_time_periot[3]);
 			$time_munite = intval($time[0])*60+intval($time[1]);
+
+
+			
 
 
 
@@ -140,19 +141,22 @@ diğer sınıflar için
 				$less+1 > sizeof($times) || $less+1 == sizeof($times)
 			)
 			{
-				$day_over = true;
 				return false;
 			}
 
-			// eğer dersin sonundan sonra 10 dk geçtiyse
-			else if 
+
+			// onceki ve sonraki ders arasındaki vakit arligi
+			$iki_ders_arasi_fark = (intval(str_split($times[$less+1], 2)[0])*60+intval(str_split($times[$less+1], 2)[1]))-$lesson_end_munite;
+
+			// eğer dersin sonundan sonra 10 dk geçtiyse			
+			if 
 			(
-				$time_munite > $lesson_end_munite && $time_munite-$lesson_end_munite < 10
+				$time_munite > $lesson_end_munite && $time_munite-$lesson_end_munite < $iki_ders_arasi_fark
 			)
 			{
 				$current_lesson = $get_day_less[$less+1];
 				$tenefus = true;
-				$remaining_time = 10-$time_munite+$lesson_end_munite;
+				$remaining_time = $iki_ders_arasi_fark-$time_munite+$lesson_end_munite;
 				$lesson_periot = str_split($times[$less+1], 2);
 				$lesson_number = $less+1;
 
@@ -201,12 +205,23 @@ diğer sınıflar için
 	$lesson_infos = lesson_infos($get_lesson[2], "a");
 ?>
 
-<div style="margin-top: 20rem;">
-<h1 class="text" style="text-align: center; font-size: 64px;" >Tenefüs</h1>
+<?php
+	if ($get_lesson != false)
+	{
+		echo '<div style="margin-top: 20rem;">';	
+	
+		if ($get_lesson[0]) echo '<h1 class="text" style="text-align: center; font-size: 64px;" >Tenefüs</h1>';
+		else echo '<h1 class="text" style="text-align: center; font-size: 64px;" >Ders</h1>';
+?>
 <!--- KALAN ZAMAN --->
 <h1 class="text" style="text-align: center; font-size: 100px;" ><?php echo "<p style='font-size: 32px;'>Zil çalmasına kalan süre:<br></p>".$get_lesson[3]; ?></h1>
 <!--- DERS ZAMAN ARALIGI --->
 <h3 class="text" style="text-align: center; margin-bottom: 10rem; font-size: 40px;" ><?php echo $get_lesson[4][0]."-".$get_lesson[4][1]."  ".$get_lesson[4][2]."-".$get_lesson[4][3]; ?></h3>
+<?php 
+} 
+else echo '<div style="margin-top: 10rem;"></div>';
+?>
+
 </div>
 <hr>
 
@@ -232,8 +247,8 @@ foreach ($classes as $class)
 
 <!------------------------------------------------------->
 
-<!---12-A--->
-<h1 style="font-size: 90px; text-align: center; margin-bottom: 5rem;">12-<?php echo ucwords($class); ?></h1>
+<!---SINIF--->
+<h1 style="font-size: 90px; text-align: center; margin-bottom: 5rem; margin-top: 5rem;">12-<?php echo ucwords($class); ?></h1>
 <!--- DERS ADI --->
 <h1 class="text" style="text-align: center; margin-top: 5rem; font-size: 64px;" ><?php echo ucwords($lesson_infos[1]); ?></h1>
 <!--- DERS HOCASI --->
@@ -247,7 +262,7 @@ foreach ($classes as $class)
 
 
 
-<table style="margin: 0 auto 13rem auto; font-size: 20px;" class="table table-bordered">
+<table style="margin: 0 auto 10rem auto; font-size: 20px;" class="table table-bordered">
 <thead>
 <tr>
   <th scope="col" style='text-align: center;'>Gün</th>
@@ -257,7 +272,7 @@ foreach ($classes as $class)
 for($r=0;$r<10;$r++)
 {
 	// TODO: ders saatini de yazıcam
-if ($r == $get_lesson[1] && ($day != "cumartesi" || $class != "d"))
+if ($r == $get_lesson[1] && ($day != "cumartesi" || $class != "d") && $get_lesson != false)
 {
 	echo '<th scope="col" class="text-light bg-secondary" style="text-align: center;">'.($r+1).'. ders</th>';
 }
@@ -281,7 +296,7 @@ for ($a=0;$a<sizeof($gunler);$a++)
 	$get_day_lessons = get_day_lessons($today,$class);
 
 
-	if($gunler[$a] == $day && ($day != "cumartesi" || $day != "d")) echo "<tr class='bg-secondary text-light'>";
+	if($gunler[$a] == $day && ($day != "cumartesi" || $day != "d") && $get_lesson != false) echo "<tr class='bg-secondary text-light'>";
 	else echo "<tr>";
 	echo "<th scope='row' style='text-align: center;'>".ucwords($gunler[$a])."</th>";
 
@@ -289,9 +304,9 @@ for ($a=0;$a<sizeof($gunler);$a++)
 	foreach ($get_day_lessons as $lesson)
 	{
 		$ders = lesson_infos($lesson, $class)[1];
-		if ($day == "cumartesi" && $class == "d") echo "<td style='text-align: center;'>".ucwords($lesson)."</td>";
-		else if (($o == $get_lesson[1] && $gunler[$a] == $day) && ($day != "cumartesi" || $day != "d")) echo "<td style='text-align: center;' class='bg-dark'>".ucwords($ders)."</td>";
-		else if ($o == $get_lesson[1] && ($day != "cumartesi" || $day != "d")) echo "<td style='text-align: center;' class='bg-secondary text-light'>".ucwords($ders)."</td>";
+		if ($day == "cumartesi" && $class == "d" && $get_lesson != false) echo "<td style='text-align: center;'>".ucwords($lesson)."</td>";
+		else if (($o == $get_lesson[1] && $gunler[$a] == $day) && ($day != "cumartesi" || $day != "d") && $get_lesson != false) echo "<td style='text-align: center;' class='bg-dark'>".ucwords($ders)."</td>";
+		else if ($o == $get_lesson[1] && ($day != "cumartesi" || $day != "d") && $get_lesson != false) echo "<td style='text-align: center;' class='bg-secondary text-light'>".ucwords($ders)."</td>";
 		else echo "<td style='text-align: center;'>".ucwords($ders)."</td>";
 		$o+=1;
 	}
@@ -308,6 +323,7 @@ for ($a=0;$a<sizeof($gunler);$a++)
 </tbody>
 </table>
 
+<hr>
 
 <?php
 }
