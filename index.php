@@ -203,7 +203,6 @@
 	$lesson_infos = lesson_infos($get_lesson[2], "a");
 ?>
 
-<h1 style="text-align: center; font-size: 50px; margin-top:5rem; font-style: italic;">Ege Paksoy</h1>
 
 
 <?php
@@ -333,8 +332,11 @@ for ($a=0;$a<sizeof($gunler);$a++)
 ?>
 
 
-
-
+<footer class="footer" style="text-align: center; height: 50px; font-size: 16px; margin: auto;">
+        <span class="text-muted" style="margin: auto; font-style: italic;">Ege Paksoy</span>
+<br>
+        <span class="text" style="margin: auto; font-size: 1px;">Bunu yazan tosun okuyana koysun :) (şaka)</span>
+    </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 </body>
