@@ -18,6 +18,7 @@ diğer sınıflar için
 	date_default_timezone_set("Turkey");
 
 	$day = strtolower(date('l', strtotime(date("y-m-d"))));
+	// $day = "sunday";
 	$time = [date("H"), date("i")];
 
 	$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
@@ -73,6 +74,8 @@ diğer sınıflar için
 		{
 			$row = str_split($result[0], 4);
 		}
+
+		if ($row == NULL) return "tatil";
 
 		return $row;
 	}
