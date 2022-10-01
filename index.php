@@ -1,10 +1,4 @@
 <!DOCTYPE html>
-<!--- geliştirmeler: 
-okul bitince bitti yazısı
-pazar günü tatil
-derlerin saat aralıkları
-diğer sınıflar için
---->
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -209,6 +203,9 @@ diğer sınıflar için
 	$lesson_infos = lesson_infos($get_lesson[2], "a");
 ?>
 
+<h1 style="text-align: center; font-size: 50px; margin-top:5rem; font-style: italic;">Ege Paksoy</h1>
+
+
 <?php
 	if ($get_lesson != false)
 	{
@@ -217,9 +214,10 @@ diğer sınıflar için
 		if ($get_lesson[0]) echo '<h1 class="text" style="text-align: center; font-size: 64px;" >Tenefüs</h1>';
 		else echo '<h1 class="text" style="text-align: center; font-size: 64px;" >Ders</h1>';
 ?>
-<!--- KALAN ZAMAN --->
+<!--- BUNU YAZAN TOSUN OKUYANA KOYSUN :) --->
+
 <h1 class="text" style="text-align: center; font-size: 100px;" ><?php echo "<p style='font-size: 32px;'>Zil çalmasına kalan süre:<br></p>".$get_lesson[3]; ?></h1>
-<!--- DERS ZAMAN ARALIGI --->
+
 <h3 class="text" style="text-align: center; margin-bottom: 10rem; font-size: 40px;" ><?php echo $get_lesson[4][0]."-".$get_lesson[4][1]."  ".$get_lesson[4][2]."-".$get_lesson[4][3]; ?></h3>
 <?php 
 } 
