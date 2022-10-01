@@ -15,9 +15,9 @@ diğer sınıflar için
 <body style="width:100%;">
 <?php
 	$day = strtolower(date('l', strtotime(date("y-m-d"))));
-	$day = "monday";
+	// $day = "monday";
 	$time = [date("H"), date("i")];
-	$time = [10,55];
+	// $time = [10,55];
 
 	$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
 
