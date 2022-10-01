@@ -12,8 +12,9 @@
 	date_default_timezone_set("Turkey");
 
 	$day = strtolower(date('l', strtotime(date("y-m-d"))));
-	// $day = "sunday";
+	// $day = "monday";
 	$time = [date("H"), date("i")];
+	// $time = [10,35];
 
 	$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
 
@@ -272,14 +273,14 @@ foreach ($classes as $class)
 
 for($r=0;$r<10;$r++)
 {
-	// TODO: ders saatini de yazıcam
+	$ders_saatleri = str_split($n_saatler[$r], 2);
 if ($r == $get_lesson[1] && ($day != "cumartesi" || $class != "d") && $get_lesson != false)
 {
-	echo '<th scope="col" class="text-light bg-secondary" style="text-align: center;">'.($r+1).'. ders</th>';
+	echo '<th scope="col" class="text-light bg-secondary" style="text-align: center;">'.$ders_saatleri[0].'-'.$ders_saatleri[1].' '.$ders_saatleri[2].'-'.$ders_saatleri[3].'</th>';
 }
 else 
 {
-	echo '<th scope="col" style="text-align: center;">'.($r+1).'. ders</th>';
+	echo '<th scope="col" style="text-align: center;">'.$ders_saatleri[0].'-'.$ders_saatleri[1].' '.$ders_saatleri[2].'-'.$ders_saatleri[3].'</th>';
 }
 }
 
