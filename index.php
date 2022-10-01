@@ -14,6 +14,7 @@ diğer sınıflar için
 </head>
 <body style="width:100%;">
 <?php
+	header("Refresh: 60");
 	date_default_timezone_set("Turkey");
 
 	$day = strtolower(date('l', strtotime(date("y-m-d"))));
