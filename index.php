@@ -14,10 +14,10 @@ diğer sınıflar için
 </head>
 <body style="width:100%;">
 <?php
+	date_default_timezone_set("Turkey");
+
 	$day = strtolower(date('l', strtotime(date("y-m-d"))));
-	// $day = "monday";
 	$time = [date("H"), date("i")];
-	// $time = [10,55];
 
 	$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
 
