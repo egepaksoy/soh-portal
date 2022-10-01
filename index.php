@@ -1,239 +1,243 @@
 <!DOCTYPE html>
+<!--- geliştirmeler: 
+tenefüsün bitiş zamanı(aynı ders gibi)
+okul bitince bitti yazısı
+pazar günü tatil
+derlerin saat aralıkları
+diğer sınıflar için
+--->
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>API Site</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+	<title>ŞÖH Portal</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<!-- ÖNCELİKLE ZAMAN AYIRIP BU PROJEYİ SİZLER İÇİN GELİŞTİRDİĞİM İÇİN RİCA EDERİM İKİNCİ OLARAK DA KEYFİNE BAKIN :) -->
 </head>
 <body>
 <?php
-date_default_timezone_set('Europe/Istanbul');
+	$day = strtolower(date('l', strtotime(date("y-m-d"))));
+	$day = "monday";
+	$time = [date("H"), date("i")];
+	$time = [9,37];
 
+	$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
 
-$day = strtolower(date('l', strtotime(date("y-m-d"))));
-// $day = "wednesday";
-$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
-$time = [date("H"), date("i")];
-// $time = ["8", "20"];
-$wkn_times = ["08000840", "08500930", "09401020", "10301110", "11201200", "12101250", "13401420", "14301510", "15201600", "16001640"];
-$friday_times = ["08000840", "08500930", "09401020", "10301110", "11201200", "12101250", "13401420", "14301510", "15201600"];
-$wkns_times = ["08300910", "09100950", "10051045", "10451125", "11401220", "12201300"];
+	$n_saatler = ["08000840", "08500930", "09401020", "10301110", "11201200", "12101250", "13401420", "14301510", "15201600", "16001640"];
+	$c_saatler = ["08000840", "08500930", "09401020", "10301110", "11201200", "12101250", "13401420", "14301510", "15201600"];
+	$h_saatler = ["08300910", "09100950", "10051045", "10451125", "11401220", "12201300"];
 
+	$pazar = "";
 
-switch ($day) {
-	case "monday":
-		$day = "pazartesi";
-		$times = $wkn_times;
-		break;
-	case "tuesday":
-		$day = "salı";
-		$times = $wkn_times;
-		break;
-	case "wednesday":
-		$day = "çarşamba";
-		$times = $wkn_times;
-		break;
-	case "thursday":
-		$day = "perşembe";
-		$times = $wkn_times;
-		break;
-	case "friday":
-		$day = "cuma";
-		$times = $friday_times;
-		break;
-	case "saturday":
-		$day = "cumartesi";
-		$times = $wkns_times;
-		break;
-	case "sunday":
-		$day = "pazar";
-		$times = $wkns_times;
-		break;
-}
-
-
-
-
-if ($day)
-{
-
-
-	function get_lessons($day)
-	{
-	$tatil = false;
-	$dir = "sqlite:db.sqlite";
-	$dhb = new PDO($dir);
-		$abidin = "SELECT lessons FROM day WHERE name='".$day."'";
-
-
-
-		$result = $dhb->query($abidin);
-
-		// günün ders programını çektik
-		$a=0;
-		foreach ($result as $row) 
-		{
-			$less = str_split($row[0], 4);
-		}
-
-		return $less;
+	switch ($day) {
+		case "monday":
+			$day = "pazartesi";
+			$times = $n_saatler;
+			break;
+		case "tuesday":
+			$day = "salı";
+			$times = $n_saatler;
+			break;
+		case "wednesday":
+			$day = "çarşamba";
+			$times = $n_saatler;
+			break;
+		case "thursday":
+			$day = "perşembe";
+			$times = $n_saatler;
+			break;
+		case "friday":
+			$day = "cuma";
+			$times = $c_saatler;
+			break;
+		case "saturday":
+			$day = "cumartesi";
+			$times = $h_saatler;
+			break;
+		case "sunday":
+			$day = "pazar";
+			$times = $wkns_times;
+			$pazar = true;
+			break;
 	}
-
-
-	$less = get_lessons($day);
-
-
-
-	// guncel saat, ders saatleri, get_lessons donutu
-	function which_lesson($times, $time, $less)
-	{
-		// kaçıncı derste ve dersin ne olduğunu aldık
-		$not_tenefus = false;
-		for ($a=0; $a < sizeof($times); $a++)
-		{
-			$ttimes = str_split($times[$a], 2);
-
-
-			if (
-				(intval($time[0]) == intval($ttimes[2]) && intval($time[1]) < intval($ttimes[3]))
-				||
-				(intval($time[0]) == intval($ttimes[0]) && intval($time[1]) > intval($ttimes[1]))
-			)
-			{
-				// mevcut dersin id'si
-				$ll = $less[$a];
-				// kaçıncı derste olduğunu aldık
-				$aa = $a;
-				// dersin bas-bitis saatleri
-				$w_time = $ttimes;
-				// tenefus ise true oluyor
-				$not_tenefus = true;
-			}
-		}
-
-		//      dersse true   dersin saatleri   kacinci derste oldugu   ders id'si
-		return [$not_tenefus, $w_time, $aa, $ll];
-	}
-
-	$not_tenefus = which_lesson($times, $time, $less)[0];
-	$w_time = which_lesson($times, $time, $less)[1];
-	$aa = which_lesson($times, $time, $less)[2];
-	$ll = which_lesson($times, $time, $less)[3];
-
-
-	// current lesson id $ll
-	// time and minute $time[0], $time[1]
-	// lessons infos $les
-	// dersse not_tenefus true oluyor
-	// w_time mevcut dersin saatlerini veriyor
-	// rem_time dersin sonuna kaç dk kaldığını veriyor
-	// $lesss = tum dersler
 
 	
-	function lesson_infos($ll)
+	// gunluk dersleri array olarak getiriyor
+	function get_day_lessons($day, $class)
 	{
-		// dersin id'sine göre dersin bilgilerini getiriyor
-		$tatil = false;
 		$dir = "sqlite:db.sqlite";
-		$dhb = new PDO($dir);
-		$husamettin = "SELECT * FROM lesson WHERE id='".$ll."'";
+		$database = new PDO($dir);
+		$qry = "SELECT lessons FROM ".$class."_day WHERE name='$day'";
+		$results = $database->query($qry);
 
-		$result = $dhb->query($husamettin);
-
-		foreach ($result as $row) 
+		foreach ($results as $result)
 		{
-			$les = $row;
-
+			$row = str_split($result[0], 4);
 		}
 
-		return $les;
+		return $row;
 	}
+	// [fiz1, fiz1, kim1, kim1, ...]
 
-	$les = lesson_infos($ll);
-
-
-	function get_all_lessons($gunler)
+	
+	// gunleri array halinde dondurup dersleri getiriyor
+	function get_all_lessons($class)
 	{
 		$dir = "sqlite:db.sqlite";
-		$dhb = new PDO($dir);
-		$abd = "SELECT lessons FROM day;";
+		$database = new PDO($dir);
+		$qry = "SELECT lessons FROM ".$class."_day";
+		$results = $database->query($qry);
 
-		$result = $dhb->query($abd);
+		$week = [];
 
-		$all_lessons = [];
-
-		$b = 0;
-		$ttr = [];
-		foreach($result as $row)
+		foreach ($results as $result)
 		{
-			$all_lessons = str_split($row[0], 4);
+			$week[] = $result[0];
+		}
 
-			foreach($all_lessons as $lessonn)
+		return $week;
+
+	}
+	// [fiz1fiz1kim1kim1...,arp1arp1biy1biy1]
+
+
+	// tenefus olup olmadığını, ders saati,hangi derste, derse/tenefüse ne kadar kaldığını ve dersin aralığını belirliyor
+	// TODO : öğle arası hesaba katılcak
+	function get_lesson($time, $times, $get_day_less)
+	{
+		if ($get_day_less == "tatil")
+		{
+			return false;
+		}
+		for ($less=0; $less < sizeof($times); $less++)
+		{
+			//								 08 00 08 40
+			$current_time_periot = str_split($times[$less], 2);
+			$lesson_start_munite = intval($current_time_periot[0])*60+intval($current_time_periot[1]);
+			$lesson_end_munite = intval($current_time_periot[2])*60+intval($current_time_periot[3]);
+			$time_munite = intval($time[0])*60+intval($time[1]);
+
+
+
+			// eğer saat ders saatleri içinde ise
+			if 
+			(
+				$lesson_start_munite < $time_munite+1 &&
+				$time_munite-1 < $lesson_end_munite
+			)
 			{
-				$ttr[$b][] = $lessonn;
+				$current_lesson = $get_day_less[$less]; // tur1
+				$tenefus = false;
+				$remaining_time = $lesson_end_munite - $time_munite; // 32
+				$lesson_periot = $current_time_periot; // [08,50,09,30]
+				$lesson_number = $less;
+
+				return [$tenefus,$lesson_number,$current_lesson, $remaining_time, $lesson_periot];
 			}
-			$b+=1;
+
+			// eğer son dersse
+			else if 
+			(
+				$less+1 > sizeof($times) || $less+1 == sizeof($times)
+			)
+			{
+				$day_over = true;
+				return false;
+			}
+
+			// eğer dersin sonundan sonra 10 dk geçtiyse
+			else if 
+			(
+				$time_munite > $lesson_end_munite && $time_munite-$lesson_end_munite < 10
+			)
+			{
+				$current_lesson = $get_day_less[$less+1];
+				$tenefus = true;
+				$remaining_time = 10-$time_munite+$lesson_end_munite;
+				$lesson_periot = str_split($times[$less+1], 2);
+				$lesson_number = $less+1;
+
+				return [$tenefus,$lesson_number,$current_lesson, $remaining_time, $lesson_periot];
+			}
 		}
 
-		return $ttr;
 	}
+	// false -> okul çıkışında
+	// false,2, tur1, 23, [08,00,08,40] -> derste
+	// true,3, tur1, 2, [08,50,09,30] -> tenefüste
 
-	$lesss = get_all_lessons($gunler);
 
-
-	function rem_munite($w_time, $not_tenefus, $time)
+	// ders idsi ve sınıf ile dersin bilgilerine erişiyor
+	function lesson_infos($lesson_id, $class)
 	{
-		// dersin bitimine kaç dk kaldıgını hesaplıyor
-		if ($not_tenefus && $w_time[2] == $time[0]) 
+		if ($lesson_id == "kul1")
 		{
-			$rem_time = intval($w_time[3]) - intval($time[1]);
-		}
-		else if ($not_tenefus && $w_time[2] > $time[0]) 
-		{
-			$rem_time = 60-intval($time[1])+intval($w_time[3]);
+			return ["kul1", "kulüp", "-", ""];
 		}
 
-		return $rem_time;
+		$dir = "sqlite:db.sqlite";
+		$database = new PDO($dir);
+		$query = "SELECT * FROM $class WHERE id='$lesson_id'";
+		
+		$results = $database->query($query);
+
+		foreach ($results as $result)
+		{
+			$lesson_id = $result[0];
+			$lesson_name = $result[1];
+			$lesson_teacher = $result[2];
+			$homework = $result[3];
+		}
+
+		return [$lesson_id, $lesson_name, $lesson_teacher, $homework];
 	}
+	// tur1, türkçe 1, hakan aydoğdu, 100 soru
 
-	$rem_time = rem_munite($w_time, $not_tenefus, $time);
-
-
-
-	if ($not_tenefus == false)
-	{
-		$les["name"] = "Tenefüs";
-	}
-
-}
-if ($day == "pazar") $tatil = true;
 ?>
 
-	<?php if($tatil) {echo "<h1>Git Başımdaan!!<br>Senin hiç arkadaşın yok mu? çık dışarda oyna</h1>";} ?>
+<?php
+	$get_day_lessons = get_day_lessons($day, "a");
+	$get_all_lessons = get_all_lessons("a");
+	$get_lesson = get_lesson($time, $times, $get_day_lessons);
+	$lesson_infos = lesson_infos($get_lesson[2], "a");
+?>
+
+<div style="margin-top: 20rem;">
+<h1 class="text" style="text-align: center; font-size: 64px;" >Tenefüs</h1>
+<!--- KALAN ZAMAN --->
+<h1 class="text" style="text-align: center; font-size: 100px;" ><?php echo "<p style='font-size: 32px;'>Zil çalmasına kalan süre:<br></p>".$get_lesson[3]; ?></h1>
+<!--- DERS ZAMAN ARALIGI --->
+<h3 class="text" style="text-align: center; margin-bottom: 10rem; font-size: 40px;" ><?php echo $get_lesson[4][0]."-".$get_lesson[4][1]."  ".$get_lesson[4][2]."-".$get_lesson[4][3]; ?></h3>
+</div>
+<hr>
 
 
 
-	<h1 class="text" style="text-align: center; margin-top: 10rem; font-size: 64px;" ><?php if ($tatil == false) echo $les["name"]; ?></h1>
-	<h2 class="text" style="text-align: center; margin-bottom: 5rem;" ><?php if ($tatil == false) echo $les["teacher"]; ?></h2>
-	<h1 class="text" style="text-align: center; font-size: 70px;" ><?php if ($tatil == false) echo $rem_time; ?></h1>
-	<h3 class="text" style="text-align: center; margin-bottom: 10rem;" ><?php if ($tatil == false && $w_time) echo $w_time[0]."-".$w_time[1]."  ".$w_time[2]."-".$w_time[3]; ?></h3>
-
-
-
-
-
-<!--
-	<h1 class="text"><?php if ($tatil == false) echo "Günün Ödevleri"; ?></h1>
 <?php 
-$b = $les["homework"];
-$homeworks = explode("|", $b);
-foreach($homeworks as $c)
+$classes = ["a","b","c","d","e"];
+
+foreach ($classes as $class)
 {
-	echo "<h5 class='text'>$c</h5>";
-}
-// TODO: odev ekleme kodu yapılacak
+	$get_day_lessons = get_day_lessons($day, $class);
+	$get_all_lessons = get_all_lessons($class);
+	$get_lesson = get_lesson($time, $times, $get_day_lessons);
+	$lesson_infos = lesson_infos($get_lesson[2], $class);
 ?>
--->
+
+
+<!--- HTML KODU --->
+
+
+
+
+
+<!------------------------------------------------------->
+
+<!---12-A--->
+<h1 style="font-size: 90px; text-align: center; margin-bottom: 5rem;">12-<?php echo ucwords($class); ?></h1>
+<!--- DERS ADI --->
+<h1 class="text" style="text-align: center; margin-top: 5rem; font-size: 64px;" ><?php echo ucwords($lesson_infos[1]); ?></h1>
+<!--- DERS HOCASI --->
+<h2 class="text" style="text-align: center; margin-bottom: 5rem; font-size: 40px;" ><?php echo ucwords($lesson_infos[2]); ?></h2>
 
 
 
@@ -243,56 +247,77 @@ foreach($homeworks as $c)
 
 
 
-
-<table style="width: 80%; margin: 0 auto; margin-bottom: 13rem;" class="table table-bordered">
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col" style='text-align: center;'>Gün</th>
+<table style="margin: 0 auto 13rem auto; font-size: 20px;" class="table table-bordered">
+<thead>
+<tr>
+  <th scope="col" style='text-align: center;'>Gün</th>
 <?php
 
 
 for($r=0;$r<10;$r++)
 {
-	if($r==$aa && $not_tenefus) echo '<th scope="col" class="text-light bg-secondary" style="text-align: center;">'.($r+1).'. ders</th>';
-	else echo '<th scope="col" style="text-align: center;">'.($r+1).'. ders</th>';
+	// TODO: ders saatini de yazıcam
+if ($r == $get_lesson[1] && ($day != "cumartesi" || $class != "d"))
+{
+	echo '<th scope="col" class="text-light bg-secondary" style="text-align: center;">'.($r+1).'. ders</th>';
+}
+else 
+{
+	echo '<th scope="col" style="text-align: center;">'.($r+1).'. ders</th>';
+}
 }
 
 ?>
-    </tr>
-  </thead>
-  <tbody>
+</tr>
+</thead>
+<tbody>
 <?php
-$a = 0;
-foreach($lesss as $le)
+$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
+
+if ($class == "d") $gunler = [$gunler[0], $gunler[1], $gunler[2], $gunler[3], $gunler[4]];
+for ($a=0;$a<sizeof($gunler);$a++)
 {
-	if($gunler[$a] == $day && $tatil == false) echo "<tr class='bg-secondary text-light'>";
+	$today = $gunler[$a];
+	$get_day_lessons = get_day_lessons($today,$class);
+
+
+	if($gunler[$a] == $day && ($day != "cumartesi" || $day != "d")) echo "<tr class='bg-secondary text-light'>";
 	else echo "<tr>";
 	echo "<th scope='row' style='text-align: center;'>".ucwords($gunler[$a])."</th>";
-	
+
 	$o = 0;
-	foreach($le as $l)
+	foreach ($get_day_lessons as $lesson)
 	{
-		if ($o == $aa && $gunler[$a] == $day && $not_tenefus) echo "<td style='text-align: center;' class='bg-dark'>".ucwords(lesson_infos($l)["name"])."</td>";
-		else if ($o == $aa && $not_tenefus) echo "<td style='text-align: center;' class='bg-secondary text-light'>".ucwords(lesson_infos($l)["name"])."</td>";
-		else echo "<td style='text-align: center;'>".ucwords(lesson_infos($l)["name"])."</td>";
+		$ders = lesson_infos($lesson, $class)[1];
+		if ($day == "cumartesi" && $class == "d") echo "<td style='text-align: center;'>".ucwords($lesson)."</td>";
+		else if (($o == $get_lesson[1] && $gunler[$a] == $day) && ($day != "cumartesi" || $day != "d")) echo "<td style='text-align: center;' class='bg-dark'>".ucwords($ders)."</td>";
+		else if ($o == $get_lesson[1] && ($day != "cumartesi" || $day != "d")) echo "<td style='text-align: center;' class='bg-secondary text-light'>".ucwords($ders)."</td>";
+		else echo "<td style='text-align: center;'>".ucwords($ders)."</td>";
 		$o+=1;
 	}
-
-	for($f=sizeof($le); $f<10; $f++)
+	
+	for($f=sizeof($get_day_lessons); $f<10; $f++)
 	{
 		echo "<td style='text-align: center;'>-</td>";
 	}
 
 	echo "</tr>";
-	$a+=1;
+
 }
 ?>
-  </tbody>
+</tbody>
 </table>
 
 
+<?php
+}
+
+?>
 
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 </body>
 </html>
