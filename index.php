@@ -12,9 +12,9 @@
 	date_default_timezone_set("Turkey");
 
 	$day = strtolower(date('l', strtotime(date("y-m-d"))));
-	// $day = "monday";
+	$day = "monday";
 	$time = [date("H"), date("i")];
-	// $time = [10,35];
+	$time = [12,41];
 
 	$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
 
@@ -147,7 +147,7 @@
 			// onceki ve sonraki ders arasındaki vakit arligi
 			$iki_ders_arasi_fark = (intval(str_split($times[$less+1], 2)[0])*60+intval(str_split($times[$less+1], 2)[1]))-$lesson_end_munite;
 
-			// eğer dersin sonundan sonra 10 dk geçtiyse			
+			// tenefusse
 			if 
 			(
 				$time_munite > $lesson_end_munite && $time_munite-$lesson_end_munite < $iki_ders_arasi_fark
@@ -156,7 +156,7 @@
 				$current_lesson = $get_day_less[$less+1];
 				$tenefus = true;
 				$remaining_time = $iki_ders_arasi_fark-$time_munite+$lesson_end_munite;
-				$lesson_periot = str_split($times[$less+1], 2);
+				$lesson_periot = [str_split($times[$less], 2)[2], str_split($times[$less], 2)[3], str_split($times[$less+1], 2)[0], str_split($times[$less+1], 2)[1]];
 				$lesson_number = $less+1;
 
 				return [$tenefus,$lesson_number,$current_lesson, $remaining_time, $lesson_periot];
@@ -214,7 +214,6 @@
 		if ($get_lesson[0]) echo '<h1 class="text" style="text-align: center; font-size: 64px;" >Tenefüs</h1>';
 		else echo '<h1 class="text" style="text-align: center; font-size: 64px;" >Ders</h1>';
 ?>
-<!--- BUNU YAZAN TOSUN OKUYANA KOYSUN :) --->
 
 <h1 class="text" style="text-align: center; font-size: 100px;" ><?php echo "<p style='font-size: 32px;'>Zil çalmasına kalan süre:<br></p>".$get_lesson[3]; ?></h1>
 
@@ -306,10 +305,11 @@ for ($a=0;$a<sizeof($gunler);$a++)
 	foreach ($get_day_lessons as $lesson)
 	{
 		$ders = lesson_infos($lesson, $class)[1];
+		$current_lesson_teacher = lesson_infos($lesson, $class)[2];
 		if ($day == "cumartesi" && $class == "d" && $get_lesson != false) echo "<td style='text-align: center;'>".ucwords($lesson)."</td>";
-		else if (($o == $get_lesson[1] && $gunler[$a] == $day) && ($day != "cumartesi" || $day != "d") && $get_lesson != false) echo "<td style='text-align: center;' class='bg-dark'>".ucwords($ders)."</td>";
-		else if ($o == $get_lesson[1] && ($day != "cumartesi" || $day != "d") && $get_lesson != false) echo "<td style='text-align: center;' class='bg-secondary text-light'>".ucwords($ders)."</td>";
-		else echo "<td style='text-align: center;'>".ucwords($ders)."</td>";
+		else if (($o == $get_lesson[1] && $gunler[$a] == $day) && ($day != "cumartesi" || $day != "d") && $get_lesson != false) echo "<td style='text-align: center;' class='bg-dark'>".ucwords($ders)." (".ucwords($current_lesson_teacher).")"."</td>";
+		else if ($o == $get_lesson[1] && ($day != "cumartesi" || $day != "d") && $get_lesson != false) echo "<td style='text-align: center;' class='bg-secondary text-light'>".ucwords($ders)." (".ucwords($current_lesson_teacher).")"."</td>";
+		else echo "<td style='text-align: center;'>".ucwords($ders)." (".ucwords($current_lesson_teacher).")"."</td>";
 		$o+=1;
 	}
 	
@@ -334,9 +334,9 @@ for ($a=0;$a<sizeof($gunler);$a++)
 
 
 <footer class="footer" style="text-align: center; height: 50px; font-size: 16px; margin: auto;">
-        <span class="text-muted" style="margin: auto; font-style: italic;">Ege Paksoy</span>
+        <span class="text-muted" style="margin: auto; font-style: italic;">Bir Ege Paksoy Ürünü</span>
 <br>
-        <span class="text" style="margin: auto; font-size: 1px;">Bunu yazan tosun okuyana koysun :) (şaka)</span>
+        <span class="text" style="margin: auto; font-size: 1px;">Pi sayısı dairenin çevre uzunluğunun çapına oranıdır</span>
     </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
