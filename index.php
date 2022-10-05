@@ -12,9 +12,9 @@
 	date_default_timezone_set("Turkey");
 
 	$day = strtolower(date('l', strtotime(date("y-m-d"))));
-	$day = "monday";
+	// $day = "monday";
 	$time = [date("H"), date("i")];
-	$time = [12,41];
+	// $time = [12,41];
 
 	$gunler = ["pazartesi","salı","çarşamba","perşembe","cuma","cumartesi"];
 
